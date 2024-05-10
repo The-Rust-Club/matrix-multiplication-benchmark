@@ -26,6 +26,7 @@ impl std::ops::Index<(usize, usize)> for Matrix {
 impl std::ops::Mul<Matrix> for Matrix {
     type Output = Self;
 
+    #[cfg(not(feature = "single-threaded"))]
     fn mul(self, rhs: Self) -> Self {
         use std::thread;
         assert_eq!(self.dim, rhs.dim);
@@ -56,6 +57,27 @@ impl std::ops::Mul<Matrix> for Matrix {
                     handle.join().unwrap();
                 });
         });
+
+        Self {
+            dim,
+            data: result_data,
+        }
+    }
+
+    #[cfg(feature = "single-threaded")]
+    fn mul(self, rhs: Self) -> Self {
+        assert_eq!(self.dim, rhs.dim);
+        let dim = self.dim;
+        // result data to store.
+        let mut result_data = vec![0; self.dim * self.dim];
+
+        for index in 0..dim {
+            for j in 0..dim {
+                for k in 0..dim {
+                    result_data[index * dim + j] += self[(index, k)] * rhs[(k, j)];
+                }
+            }
+        }
 
         Self {
             dim,
