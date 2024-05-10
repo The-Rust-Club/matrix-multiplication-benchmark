@@ -50,6 +50,8 @@ impl std::ops::Mul<Matrix> for Matrix {
                         }
                     })
                 })
+                .collect::<Vec<_>>()
+                .into_iter()
                 .for_each(|handle| {
                     handle.join().unwrap();
                 });
