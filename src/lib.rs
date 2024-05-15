@@ -10,17 +10,19 @@ impl Matrix {
     }
 
     pub fn random(dim: usize, cap: i32) -> Self {
-        let data = (0..dim * dim).map(|_| rand::random::<i32>() % cap).collect();
+        let data = (0..dim * dim)
+            .map(|_| rand::random::<i32>() % cap)
+            .collect();
         Self { dim, data }
     }
 }
 
-impl std::ops::Index<(usize, usize)> for Matrix {
+impl std::ops::Index<usize> for Matrix {
     type Output = i32;
 
     #[inline]
-    fn index(&self, (i, j): (usize, usize)) -> &Self::Output {
-        &self.data[i * self.dim + j]
+    fn index(&self, i: usize) -> &Self::Output {
+        &self.data[i]
     }
 }
 
@@ -47,7 +49,7 @@ impl std::ops::Mul<Matrix> for Matrix {
                     s.spawn(move || {
                         for j in 0..dim {
                             for k in 0..dim {
-                                data[j] += lhs[(index, k)] * rhs[(k, j)];
+                                data[j] += lhs[index * dim + k] * rhs[k * dim + j];
                             }
                         }
                     })
@@ -96,10 +98,9 @@ fn test_matrix_mul() {
 }
 
 #[test]
-fn test_matrix_mul2(){
+fn test_matrix_mul2() {
     let a = Matrix::from(3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
     let b = Matrix::from(3, vec![9, 8, 7, 6, 5, 4, 3, 2, 1]);
     let c = a * b;
     assert_eq!(c.data, vec![30, 24, 18, 84, 69, 54, 138, 114, 90])
 }
-
