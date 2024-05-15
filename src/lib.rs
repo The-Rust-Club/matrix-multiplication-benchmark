@@ -18,6 +18,7 @@ impl Matrix {
 impl std::ops::Index<(usize, usize)> for Matrix {
     type Output = i32;
 
+    #[inline]
     fn index(&self, (i, j): (usize, usize)) -> &Self::Output {
         &self.data[i * self.dim + j]
     }
