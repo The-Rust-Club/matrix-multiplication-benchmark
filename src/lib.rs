@@ -43,7 +43,7 @@ impl std::ops::Mul<Matrix> for Matrix {
             result_data
                 .chunks_mut(dim)
                 .enumerate()
-                .map(|(index, data)| {
+                .for_each(|(index, data)| {
                     let lhs = lhs.clone();
                     let rhs = rhs.clone();
                     s.spawn(move || {
@@ -52,12 +52,7 @@ impl std::ops::Mul<Matrix> for Matrix {
                                 data[j] += lhs[index * dim + k] * rhs[k * dim + j];
                             }
                         }
-                    })
-                })
-                .collect::<Vec<_>>()
-                .into_iter()
-                .for_each(|handle| {
-                    handle.join().unwrap();
+                    });
                 });
         });
 
